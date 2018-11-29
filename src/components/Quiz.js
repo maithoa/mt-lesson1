@@ -6,6 +6,7 @@
   import QuestionCount from '../components/QuestionCount';
   import AnswerOption from '../components/AnswerOption';
   import AnswerInput from '../components/AnswerInput';
+  import QuizResult from './QuizResult';
 
 
   function Quiz(props) {
@@ -43,6 +44,18 @@
 	    );
 	  }
 
+	function showResultSection() {
+		if (!(props.result === '') ){
+			return (
+	     	<QuizResult quizResult={props.result} 
+ 						onNext = {props.onNext}
+ 			/>
+	    	);
+	    }
+	    
+
+	  }
+
     return (
 	    <CSSTransitionGroup
 	      className="container"
@@ -59,8 +72,12 @@
 	          total={props.questionTotal}
 	        />
 	        <Question content={props.question} />
-	        
+
  			{(typeof props.answerOptions === "undefined") ? renderAnswerInput() : rendeAnwersChoices() }
+
+	 		{showResultSection()}
+ 			
+
 
 	      </div>
 	    </CSSTransitionGroup>
@@ -69,16 +86,19 @@
   }
 
   Quiz.propTypes = {
-    userAnswer: PropTypes.string.isRequired,
+  	questionId: PropTypes.number.isRequired,
+  	counter: PropTypes.number.isRequired,
+  	questionTotal: PropTypes.number.isRequired,
+  	question: PropTypes.string.isRequired,
     answerOptions: PropTypes.array.isRequired,
+    userAnswer: PropTypes.string.isRequired,
     correctAnswer: PropTypes.string.isRequired,
-    counter: PropTypes.number.isRequired,
-    question: PropTypes.string.isRequired,
-    questionId: PropTypes.number.isRequired,
-    questionTotal: PropTypes.number.isRequired,
+    result:  PropTypes.string.isRequired,
     onAnswerSelected: PropTypes.func.isRequired,
     onAnswerInputted: PropTypes.func.isRequired,
-    onInputChanged: PropTypes.func.isRequired
+    onInputChanged: PropTypes.func.isRequired,
+    onNext : PropTypes.func.isRequired,
+    mode: PropTypes.string.isRequired
 
   };
 

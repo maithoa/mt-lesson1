@@ -5,7 +5,7 @@
   function Result(props) {
     return (
       <CSSTransitionGroup
-        className="container result"
+        className="container results"
         component="div"
         transitionName="fade"
         transitionEnterTimeout={800}
@@ -16,12 +16,16 @@
         <div>
           Congratulations! You got <strong>{props.quizResult}</strong> correct answers!
         </div>
+        <form onSubmit={props.restartQuiz}>
+              <input type="submit" value="Restart Quiz" />
+            </form>
       </CSSTransitionGroup>
     );
   }
 
   Result.propTypes = {
     quizResult: PropTypes.string.isRequired,
+    restartQuiz: PropTypes.function.isRequired,
   };
 
   export default Result;

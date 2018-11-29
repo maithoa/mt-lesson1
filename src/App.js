@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import logo from './svg/logo.svg';
 
-import Question from './components/Question';
 import Quiz from './components/Quiz';
 import Result from './components/Result';
 
@@ -16,25 +15,25 @@ class App extends Component {
     super(props);
 
     this.state = {
-       requestFailed: false,
-       quizQuestions: null,
+      requestFailed: false,
+      quizQuestions: null,
 
-       counter: 0,
-       questionId: 1,
-       question: '',
-       answerOptions: [],
-       userAnswer: '',
-       correctAnswer:'',
-       answersTotalPoints:0,
-       result: '',
+      counter: 1,
+      questionId: 1,
+      question: '',
+      answerOptions: [],
+      userAnswer: '',
+      correctAnswer:'',
+      answersTotalPoints:0,
+      result: '',
 
-       data: null,
-      isLoading: false,
-      error: null
+      finalResult:''
     };
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
     this.handleAnswerInputted = this.handleAnswerInputted.bind(this);
     this.handleInputChanged = this.handleInputChanged.bind(this);
+    this.moveForward = this.moveForward.bind(this);
+    this.restartQuiz = this.restartQuiz.bind(this);
   }
 
   componentDidMount() {
@@ -65,20 +64,26 @@ class App extends Component {
   initializeQuiz (data){
     //shuffle questions
     const shuffledQuestions = this.shuffleArray(data);
-    this.setState({
-      quizQuestions: shuffledQuestions
-    });
 
     //shuffle choices of each questions
-    const shuffledAnswerOptions = this.state.quizQuestions.map((question) => this.shuffleArray(question.choices));  
-    console.log("after shuffled choices: "+this.state.quizQuestions);
+    shuffledQuestions.map((question) => this.shuffleArray(question.choices));  
 
     //initialize for the first quiz
     this.setState({
+      counter: 1,
+      quizQuestions: shuffledQuestions,
+
       questionId: shuffledQuestions[0].id,
       question: shuffledQuestions[0].question,
       answerOptions: shuffledQuestions[0].choices,
-      correctAnswer: shuffledQuestions[0].answer
+
+
+      userAnswer: '',
+      correctAnswer:'',
+      answersTotalPoints:0,
+      result: '',
+
+      finalResult:''
     });
 
   }
@@ -111,29 +116,28 @@ class App extends Component {
     
     this.setState({userAnswer: event.target.value});
     
-
   }
 
   handleAnswerInputted(event) {
     event.preventDefault();
 
-    this.fetchUserAnswer();
+    this.fetchCurrentAnswer();
 
-    this.moveForward();
+    //this.moveForward();
 
   }
 
   handleAnswerSelected(event) {
-    var selectedElem = event.currentTarget;
-    this.state.userAnswer = selectedElem.value;
 
-    this.fetchUserAnswer();
+    this.setState({userAnswer: event.currentTarget.value});
 
-    this.moveForward();
+    this.fetchCurrentAnswer();
+
+    //this.moveForward();
     
   }
 
-  fetchUserAnswer(){
+  fetchCurrentAnswer(){
     //fetch data base on current id
     var url = API_URL+QUERY_ANSWER+this.state.questionId.toString();
     fetch(url)
@@ -146,7 +150,7 @@ class App extends Component {
       })
       .then(d => d.json())
       .then(d => {
-         this.checkUserAnswer(d.answer)
+         this.setUserAnswer(d.answer)
       }, () => {
         this.setState({
           requestFailed: true
@@ -156,41 +160,54 @@ class App extends Component {
     
   }
 
-  checkUserAnswer(correctValue)  {
+  setUserAnswer(correctValue)  {
 
     if (correctValue.toUpperCase().trim() === this.state.userAnswer.toUpperCase().trim()) {
+      var increasedPoint = this.state.answersTotalPoints + 1;
       //do something
-      this.state.answersTotalPoints +=1;
-      //display result here
-      return true;
+      this.setState({
+        answersTotalPoints: increasedPoint,
+        correctAnswer:correctValue, 
+        result: 'Correct!'
+      });
+
+
     } else{
       //do something
       //display result here
-      return false;
+      this.setState({
+        correctAnswer: correctValue,
+        result: 'Try again next time!'  
+      });
+
     }
   }
 
-  moveForward(){
+  
 
-    if (this.state.counter < this.state.quizQuestions.length-1) {
+  moveForward(event){
+    event.preventDefault();
+
+    if (this.state.counter < this.state.quizQuestions.length) {
         setTimeout(() => this.setNextQuestion(), 500);
     } else {
         setTimeout(() => this.setResults(this.getResults()), 500);
     }
   }
+
+
    
   setNextQuestion() {
-    const counter = this.state.counter + 1;
-
-    
+    const counter = this.state.counter + 1;   
+    console.log(counter) ;
     this.setState({
       counter: counter,
-      questionId: this.state.quizQuestions[counter].id,
-      question: this.state.quizQuestions[counter].question,
-      answerOptions: this.state.quizQuestions[counter].choices,
-      correctAnswer: this.state.quizQuestions[counter].answer,
-      userAnswer: ''
-
+      questionId: this.state.quizQuestions[counter - 1].id,
+      question: this.state.quizQuestions[counter - 1].question,
+      answerOptions: this.state.quizQuestions[counter -1].choices,
+      correctAnswer: null,
+      userAnswer: '',
+      result: ''
     });
   }
 
@@ -202,24 +219,25 @@ class App extends Component {
 
   setResults (result) {
     
-      this.setState({ result: result});
+      this.setState({ finalResult: result});
    
   }
-
+ 
   renderQuiz() {
-    console.log("questions:" + this.state.quizQuestions);
     return (
       <Quiz
         counter = {this.state.counter}
-        userAnswer={this.state.userAnswer}
-        answerOptions={this.state.answerOptions}
-        questionId={this.state.questionId}
-        question={this.state.question}
-        correctAnswer={this.state.correctAnswer}
-        questionTotal={this.state.quizQuestions.length}
-        onAnswerSelected={this.handleAnswerSelected}
-        onAnswerInputted={this.handleAnswerInputted}
-        onInputChanged={this.handleInputChanged}
+        userAnswer = {this.state.userAnswer}
+        answerOptions = {this.state.answerOptions}
+        questionId = {this.state.questionId}
+        question = {this.state.question}
+        correctAnswer = {this.state.correctAnswer}
+        questionTotal = {this.state.quizQuestions.length}
+        result = {this.state.result}
+        onAnswerSelected = {this.handleAnswerSelected}
+        onAnswerInputted = {this.handleAnswerInputted}
+        onInputChanged = {this.handleInputChanged}
+        onNext = {this.moveForward}
       />
 
     );
@@ -227,32 +245,30 @@ class App extends Component {
 
   renderResult() {
     return (
-      <Result quizResult={this.state.result} />
+      <Result quizResult={this.state.finalResult} 
+              restartQuiz={this.restartQuiz} />
     );
   }
 
-  rederResult(id){
+  restartQuiz(event){
+    event.preventDefault();
+    this.initializeQuiz(this.state.quizQuestions);
 
   }
 
   render() {
-      if (this.state.requestFailed) return <p>Failed!</p>
-      if (!this.state.quizQuestions) return <p>Loading...</p>
+    if (this.state.requestFailed) return <p>Failed to load questions!</p>;
+    if (!this.state.quizQuestions) return <p>Loading...</p>;
         
     return (
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>React Quiz</h2>
-
         </div>
-        {this.state.result ? this.renderResult() : this.renderQuiz()}
-
+        {this.state.finalResult ? this.renderResult() : this.renderQuiz()}
        
       </div>
-
-
-
     );
   }
 }
