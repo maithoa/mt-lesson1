@@ -7,12 +7,14 @@
   import AnswerOption from '../components/AnswerOption';
   import AnswerInput from '../components/AnswerInput';
   import QuizResult from './QuizResult';
+  import Countdown from 'react-countdown-now';
 
 
   function Quiz(props) {
   	function renderAnswerInput(){
-		return (
+ 		return (
 	      <AnswerInput
+	      	result = {props.result}
 	     	questionId={props.questionId}
 	        userAnswer={props.userAnswer}
 	        onAnswerInputted={props.onAnswerInputted}
@@ -45,16 +47,29 @@
 	  }
 
 	function showResultSection() {
-		if (!(props.result === '') ){
-			return (
-	     	<QuizResult quizResult={props.result} 
- 						onNext = {props.onNext}
- 			/>
-	    	);
-	    }
-	    
 
-	  }
+			return (
+		     	<QuizResult quizResult={props.result} 
+	 						onNext = {props.onNext}
+	 			/>
+	    	);
+	    
+	    
+	    }
+
+	function showCountDown() {
+		return (
+
+		     	<Countdown
+					date={Date.now() + 5000}
+					onComplete={props.onTimeOut}
+				/>
+
+	    );
+	    
+		
+	}
+
 
     return (
 	    <CSSTransitionGroup
@@ -72,10 +87,12 @@
 	          total={props.questionTotal}
 	        />
 	        <Question content={props.question} />
-
+	       
+			{(props.countdown === 'start')? showCountDown(): null}
+ 			
  			{(typeof props.answerOptions === "undefined") ? renderAnswerInput() : rendeAnwersChoices() }
 
-	 		{showResultSection()}
+	 		{(!(props.result === '') )? showResultSection(): null}
  			
 
 
@@ -98,7 +115,8 @@
     onAnswerInputted: PropTypes.func.isRequired,
     onInputChanged: PropTypes.func.isRequired,
     onNext : PropTypes.func.isRequired,
-    mode: PropTypes.string.isRequired
+    onTimeOut: PropTypes.func.isRequired,
+    countdown:PropTypes.string.isRequired
 
   };
 

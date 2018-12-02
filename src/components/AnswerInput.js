@@ -3,13 +3,14 @@
 
   function AnswerInput(props) {
     return (
-      <div className="answerInput">
+      <div className="answerInput" id = {props.questionId}>
         <form onSubmit={props.onAnswerInputted}>
           <input placeholder = 'Input your answer here' type='text' name='userAnswer' onChange = {props.onInputChanged}  />
           <input type="submit" value="Submit answer" />
         </form>
-      </div>  
-    );
+      </div>    
+      ); 
+    
   }
 
   AnswerInput.propTypes = {

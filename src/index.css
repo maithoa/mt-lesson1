@@ -83,9 +83,13 @@ body {
   padding: 0;
   list-style: none;
 }
+.answerOptions:disabled {
+  cursor:  not-allowed;
+}
 
 /* QuestionCount Component */
-.questionCount {
+.questionCount,
+.countdown {
   padding: 1.5rem 2.5rem 0;
   font-size: 14px;
 }
@@ -114,14 +118,7 @@ body {
 }
 
 /* AnswerOption Component */
-.answerInput,
-.answerInputWrong{
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-  padding: 8px;
-}
-.answerInput,
-.answerInputWrong {
+.answerInput{
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
   padding: 8px;
@@ -136,10 +133,13 @@ body {
     border-radius: 4px;
     box-sizing: border-box;
 }
+.answerInput input[type=text]:disabled{
+    cursor: not-allowed;
+}
 
 .answerInput input[type=submit] {
     position: relative;
-    background-color: #4CAF50;
+    background-color: #00cc33;
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -149,34 +149,22 @@ body {
 }
 
 .answerInput input[type=submit]:hover {
-    background-color: #45a049;
+    background-color: #00cc32;
 }
 
-.answerInputWrong input[type=text]{
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #cc3300;
-    border-radius: 4px;
-    box-sizing: border-box;
+.answerInput input[type=submit]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
-.answerInputWrong input[type=submit] {
-    position: relative;
-    background-color: #eee;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-
+.answerInput.incorrect input[type=text]{
+    border: 2px solid #cc3300;
+}
+.answerInput.correct input[type=text]{
+    border: 2px solid #00cc33;
 }
 
-.answerInputWrong input[type=submit]:hover {
-    background-color: #eee;
-}
+
 
 
 .answerOption {
@@ -188,25 +176,13 @@ body {
   background-color:  #ebfaeb;
 }
 
-.answerWrong {
-  border-top: 1px solid #cc3300;
-  border-bottom: 1px solid #cc3300;
-}
-
-.answerCorrect {
-  border-top: 1px solid #006400;
-  border-bottom: 1px solid #006400;
-}
-
-.radioCustomButton,
-.radioCustomButton_Wrong {
+.radioCustomButton {
   position: absolute;
   width: auto;
   opacity: 0;
 }
 
 .radioCustomButton,
-.radioCustomButton_Wrong,
 .radioCustomLabel {
   display: inline-block;
   vertical-align: middle;
@@ -244,27 +220,6 @@ body {
   border-color: #4CAF50;
 }
 
-.radioCustomButton_Wrong ~ .radioCustomLabel:before {
-  position: absolute;
-  top: 20px;
-  left: 38px;
-  width: 28px;
-  height: 28px;
-  content: '';
-  display: inline-block;
-  vertical-align: middle;
-  background: #fff;
-  border: 1px solid #bbb;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.radioCustomButton_Wrong:checked ~ .radioCustomLabel:before {
-  content: '';
-  background: #ffffff url(./svg/icon-cross.svg) no-repeat;
-  background-size: 28px;
-  border-color: #cc3300;
-}
 
 /* Animation */
 .fade-enter {

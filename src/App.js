@@ -32,8 +32,10 @@ class App extends Component {
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
     this.handleAnswerInputted = this.handleAnswerInputted.bind(this);
     this.handleInputChanged = this.handleInputChanged.bind(this);
-    this.moveForward = this.moveForward.bind(this);
+    this.moveForward= this.moveForward.bind(this);
     this.restartQuiz = this.restartQuiz.bind(this);
+    this.handleTimeOut = this.handleTimeOut.bind(this);
+
   }
 
   componentDidMount() {
@@ -83,7 +85,9 @@ class App extends Component {
       answersTotalPoints:0,
       result: '',
 
-      finalResult:''
+      finalResult:'',
+
+      countdown:'start'
     });
 
   }
@@ -111,30 +115,50 @@ class App extends Component {
     console.log("array out:" + array);
     return array;
   };
+
+  
   
   handleInputChanged(event) {
-    
-    this.setState({userAnswer: event.target.value});
+    //won't update value until form submitted
+    //this.setState({userAnswer: event.target.value});
     
   }
 
   handleAnswerInputted(event) {
+
     event.preventDefault();
+    this.stopCountDown();
 
+        
+    var currentElem = event.target;
+
+    var userInput = currentElem.elements["userAnswer"].value;
+
+
+    var allInputItems = currentElem.getElementsByTagName("input");
+    for(var i = 0 ; i < allInputItems.length; i++)
+      allInputItems[i].disabled = true;
+
+    this.setState({userAnswer: userInput});
     this.fetchCurrentAnswer();
-
-    //this.moveForward();
 
   }
 
-  handleAnswerSelected(event) {
+  stopCountDown(){
+    this.setState ({countdown:'stop'})
+  }
 
+  handleAnswerSelected(event) {
+    var userAnswer = event.currentTarget.value;
     this.setState({userAnswer: event.currentTarget.value});
+
+    this.stopCountDown();
+
+    //event.currentTarget.parentNode.disabled = true;
 
     this.fetchCurrentAnswer();
 
-    //this.moveForward();
-    
+
   }
 
   fetchCurrentAnswer(){
@@ -173,8 +197,6 @@ class App extends Component {
 
 
     } else{
-      //do something
-      //display result here
       this.setState({
         correctAnswer: correctValue,
         result: 'Try again next time!'  
@@ -187,7 +209,15 @@ class App extends Component {
 
   moveForward(event){
     event.preventDefault();
+    this.setForward();
+    
+  }
 
+  handleTimeOut(event){
+    this.setForward();
+  }
+
+  setForward(){
     if (this.state.counter < this.state.quizQuestions.length) {
         setTimeout(() => this.setNextQuestion(), 500);
     } else {
@@ -207,7 +237,8 @@ class App extends Component {
       answerOptions: this.state.quizQuestions[counter -1].choices,
       correctAnswer: null,
       userAnswer: '',
-      result: ''
+      result: '',
+      countdown: 'start'
     });
   }
 
@@ -238,7 +269,10 @@ class App extends Component {
         onAnswerInputted = {this.handleAnswerInputted}
         onInputChanged = {this.handleInputChanged}
         onNext = {this.moveForward}
-      />
+        onTimeOut = {this.handleTimeOut}
+        countdown = {this.state.countdown}
+
+      />  
 
     );
   }

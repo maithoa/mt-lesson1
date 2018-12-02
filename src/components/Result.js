@@ -14,7 +14,8 @@
         transitionAppearTimeout={500}
       >
         <div>
-          Congratulations! You got <strong>{props.quizResult}</strong> correct answers!
+          You completed the quiz, Congrats! 
+          You got <strong>{props.quizResult}</strong> correct answers!
         </div>
         <form onSubmit={props.restartQuiz}>
               <input type="submit" value="Restart Quiz" />
