@@ -18,8 +18,8 @@
           You got <strong>{props.quizResult}</strong> correct answers!
         </div>
         <form onSubmit={props.restartQuiz}>
-              <input type="submit" value="Restart Quiz" />
-            </form>
+          <input type="submit" value="Restart Quiz" />
+        </form>
       </CSSTransitionGroup>
     );
   }

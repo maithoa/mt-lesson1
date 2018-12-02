@@ -1,14 +1,13 @@
   import React from 'react';
   import PropTypes from 'prop-types';
   import { CSSTransitionGroup } from 'react-transition-group';
-
-  import Question from '../components/Question';
-  import QuestionCount from '../components/QuestionCount';
-  import AnswerOption from '../components/AnswerOption';
-  import AnswerInput from '../components/AnswerInput';
-  import QuizResult from './QuizResult';
   import Countdown from 'react-countdown-now';
 
+  import Question from './Question';
+  import QuestionCount from './QuestionCount';
+  import AnswerOption from './AnswerOption';
+  import AnswerInput from './AnswerInput';
+  import QuizResult from './QuizResult';
 
   function Quiz(props) {
   	function renderAnswerInput(){
@@ -21,9 +20,8 @@
 	        onInputChanged={props.onInputChanged}
 	      />
 	    );
-
-
   	}
+
   	function rendeAnwersChoices(){
   		return(
   			 <ul className="answerOptions">
@@ -44,30 +42,23 @@
 	        onAnswerSelected={props.onAnswerSelected}
 	      />
 	    );
-	  }
+	}
 
 	function showResultSection() {
-
-			return (
-		     	<QuizResult quizResult={props.result} 
-	 						onNext = {props.onNext}
-	 			/>
-	    	);
-	    
-	    
-	    }
+		return (
+		     <QuizResult quizResult={props.result} 
+	 					onNext = {props.onNext}
+	 		/>
+	    );
+	}
 
 	function showCountDown() {
 		return (
-
-		     	<Countdown
-					date={Date.now() + 5000}
-					onComplete={props.onTimeOut}
-				/>
-
-	    );
-	    
-		
+		    <Countdown
+				date={Date.now() + 5000}
+				onComplete={props.onTimeOut}
+			/>
+	    );	
 	}
 
 
@@ -93,12 +84,8 @@
  			{(typeof props.answerOptions === "undefined") ? renderAnswerInput() : rendeAnwersChoices() }
 
 	 		{(!(props.result === '') )? showResultSection(): null}
- 			
-
-
 	      </div>
 	    </CSSTransitionGroup>
-
 	  );
   }
 

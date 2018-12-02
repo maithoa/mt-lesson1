@@ -29,6 +29,7 @@ class App extends Component {
 
       finalResult:''
     };
+
     this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
     this.handleAnswerInputted = this.handleAnswerInputted.bind(this);
     this.handleInputChanged = this.handleInputChanged.bind(this);
@@ -98,10 +99,10 @@ class App extends Component {
     if (array) {
       var currentIndex = array.length, temporaryValue, randomIndex;
 
-      // While there remain elements to shuffle...
+      // While there remain elements to shuffle
       while (0 !== currentIndex) {
 
-        // Pick a remaining element...
+        // Pick a remaining element
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex -= 1;
 
@@ -116,26 +117,25 @@ class App extends Component {
     return array;
   };
 
-  
+  handleTimeOut(event){
+    this.setForward();
+  }
+
   
   handleInputChanged(event) {
-    //won't update value until form submitted
+    //won't update value until form submitted - event changed causes pause of count down :(
     //this.setState({userAnswer: event.target.value});
     
   }
 
   handleAnswerInputted(event) {
-
     event.preventDefault();
     this.stopCountDown();
 
-        
     var currentElem = event.target;
-
     var userInput = currentElem.elements["userAnswer"].value;
-
-
     var allInputItems = currentElem.getElementsByTagName("input");
+
     for(var i = 0 ; i < allInputItems.length; i++)
       allInputItems[i].disabled = true;
 
@@ -144,26 +144,22 @@ class App extends Component {
 
   }
 
-  stopCountDown(){
-    this.setState ({countdown:'stop'})
-  }
 
   handleAnswerSelected(event) {
-    var userAnswer = event.currentTarget.value;
-    this.setState({userAnswer: event.currentTarget.value});
-
     this.stopCountDown();
 
-    //event.currentTarget.parentNode.disabled = true;
+    var userAnswer = event.currentTarget.value;
 
+    this.setState({userAnswer: event.currentTarget.value});
     this.fetchCurrentAnswer();
 
-
   }
+
 
   fetchCurrentAnswer(){
     //fetch data base on current id
     var url = API_URL+QUERY_ANSWER+this.state.questionId.toString();
+
     fetch(url)
      .then(response => {
         if (!response.ok) {
@@ -188,6 +184,7 @@ class App extends Component {
 
     if (correctValue.toUpperCase().trim() === this.state.userAnswer.toUpperCase().trim()) {
       var increasedPoint = this.state.answersTotalPoints + 1;
+
       //do something
       this.setState({
         answersTotalPoints: increasedPoint,
@@ -205,7 +202,10 @@ class App extends Component {
     }
   }
 
-  
+
+  stopCountDown(){
+    this.setState ({countdown:'stop'})
+  }
 
   moveForward(event){
     event.preventDefault();
@@ -213,9 +213,7 @@ class App extends Component {
     
   }
 
-  handleTimeOut(event){
-    this.setForward();
-  }
+
 
   setForward(){
     if (this.state.counter < this.state.quizQuestions.length) {
@@ -229,7 +227,7 @@ class App extends Component {
    
   setNextQuestion() {
     const counter = this.state.counter + 1;   
-    console.log(counter) ;
+
     this.setState({
       counter: counter,
       questionId: this.state.quizQuestions[counter - 1].id,

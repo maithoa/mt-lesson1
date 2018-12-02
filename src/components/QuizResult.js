@@ -3,21 +3,16 @@
 
   function QuizResult(props) {
       return (
-
           <div  className="container result">
             <strong>{props.quizResult}</strong>
-
             <form onSubmit={props.onNext}>
               <input type="submit" value="Next question" />
             </form>
-
           </div>
-
       );
   }
 
   QuizResult.propTypes = {
-
     quizResult: PropTypes.string.isRequired,
     onNext: PropTypes.function.isRequired
   };
