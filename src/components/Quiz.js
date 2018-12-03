@@ -55,7 +55,7 @@
 	function showCountDown() {
 		return (
 		    <Countdown
-				date={Date.now() + 5000}
+				date={Date.now() + 10000}
 				onComplete={props.onTimeOut}
 			/>
 	    );	

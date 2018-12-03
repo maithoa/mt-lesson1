@@ -153,20 +153,6 @@ input[type=submit]:disabled {
   align-items: center;
 }
 
-/*
-.results input[type=submit],  
-.result input[type=submit] {
-    position: relative;
-    background-color: #00bf6f;
-    color: white;
-    padding: 12px 20px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-*/
-
 /* AnswerInput Component */
 .answerInput{
   border-top: 1px solid #eee;
@@ -199,7 +185,10 @@ input[type=submit]:disabled {
 
 
 .answerOption {
-
+  border-top: 1px solid #ff4090;  
+  /*border-left:1px solid #ff4090;  */
+  border-image-source: linear-gradient(to right, rgba(255,64,144,1), rgba(255,64,144,0));
+  border-image-slice: 10; 
 
 }
 
