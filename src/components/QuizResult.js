@@ -3,8 +3,10 @@
 
   function QuizResult(props) {
       return (
-          <div  className="container result">
-            <strong>{props.quizResult}</strong>
+          <div  className="result">
+            <p>
+              <span >{props.quizResult}</span>
+            </p>
             <form onSubmit={props.onNext}>
               <input type="submit" value="Next question" />
             </form>

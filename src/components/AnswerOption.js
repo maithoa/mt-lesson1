@@ -4,6 +4,7 @@
   function AnswerOption(props) {
     return (
       <li className="answerOption">
+        <span class = "top-left-arrow-right"/>
         <input
           type="radio"
           className="radioCustomButton"

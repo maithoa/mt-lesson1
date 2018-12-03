@@ -5,7 +5,7 @@
   function Result(props) {
     return (
       <CSSTransitionGroup
-        className="container results"
+        className="results"
         component="div"
         transitionName="fade"
         transitionEnterTimeout={800}
@@ -14,12 +14,18 @@
         transitionAppearTimeout={500}
       >
         <div>
+          <p>
           You completed the quiz, Congrats! 
-          You got <strong>{props.quizResult}</strong> correct answers!
+          </p>
+          <p>
+          You got <span><strong>{props.quizResult}</strong></span> correct answers!
+          </p>
         </div>
+        <div>
         <form onSubmit={props.restartQuiz}>
           <input type="submit" value="Restart Quiz" />
         </form>
+        </div>
       </CSSTransitionGroup>
     );
   }

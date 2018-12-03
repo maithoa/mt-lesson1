@@ -78,9 +78,10 @@
 	          total={props.questionTotal}
 	        />
 	        <Question content={props.question} />
-	       
-			{(props.countdown === 'start')? showCountDown(): null}
- 			
+	       	<div className="countdown">
+				{(props.countdown === 'start')? showCountDown(): null}
+ 			</div>
+
  			{(typeof props.answerOptions === "undefined") ? renderAnswerInput() : rendeAnwersChoices() }
 
 	 		{(!(props.result === '') )? showResultSection(): null}
