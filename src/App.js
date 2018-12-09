@@ -11,7 +11,7 @@ import Result from './components/Result';
 //const QUERY_ANSWER = "/answer/";
 const API_URL = 'https://quiz-api-v2.herokuapp.com'
 const QUERY_DEFAULT = "/api/quiz";
-const QUERY_ANSWER = "api/quiz/answer/";
+const QUERY_ANSWER = "/api/quiz/answer/";
 
 class App extends Component {
    constructor(props) {

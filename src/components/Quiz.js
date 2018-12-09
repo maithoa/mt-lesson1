@@ -82,7 +82,7 @@
 				{(props.countdown === 'start')? showCountDown(): null}
  			</div>
 
- 			{(typeof props.answerOptions === "undefined") ? renderAnswerInput() : rendeAnwersChoices() }
+ 			{((typeof props.answerOptions === "undefined") || (props.answerOptions.length === 0)) ? renderAnswerInput() : rendeAnwersChoices() }
 
 	 		{(!(props.result === '') )? showResultSection(): null}
 	      </div>
