@@ -6,9 +6,12 @@ import Result from './components/Result';
 
 
 
-const API_URL = 'https://futu-quiz-api.now.sh';
-const QUERY_DEFAULT = "/questions";
-const QUERY_ANSWER = "/answer/";
+//const API_URL = 'https://quiz-api-v2.herokuapp.com';
+//const QUERY_DEFAULT = "/questions";
+//const QUERY_ANSWER = "/answer/";
+const API_URL = 'https://quiz-api-v2.herokuapp.com'
+const QUERY_DEFAULT = "/api/quiz";
+const QUERY_ANSWER = "api/quiz/answer/";
 
 class App extends Component {
    constructor(props) {
