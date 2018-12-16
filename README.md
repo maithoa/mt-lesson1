@@ -1,5 +1,20 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+Check out the [The Quiz App here](https://mt-lesson1.herokuapp.com/)
+
+The current app is using [This backend](https://quiz-api-v2.herokuapp.com/)
+
+## This project has been made with the references from below articles and source codes
+
+https://medium.com/quick-code/deploying-production-build-of-react-app-to-heroku-2548d8bf6936
+
+http://carinyperez.com/create-quiz-react/
+https://github.com/carinyperez/quiz-cariny
+
+https://reactjs.org/tutorial/tutorial.html
+
+https://medium.com/@faizanv/authentication-for-your-react-and-express-application-w-json-web-tokens-923515826e0
+
 ## Available Scripts
 
 In the project directory, you can run:
