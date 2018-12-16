@@ -1,310 +1,223 @@
-import React, { Component } from 'react';
-import logo from './svg/logo.svg';
+import React, { Component } from "react";
+import { Link, Route, Switch, IndexRoute } from "react-router-dom";
+import { instanceOf } from "prop-types";
+import { withCookies, Cookies } from "react-cookie";
 
-import Quiz from './components/Quiz';
-import Result from './components/Result';
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import NavComponent from "./components/NavComponent";
+import QuizApp from "./QuizApp";
+import Top3 from "./components/Top3";
+import withAuth from "./components/withAuth";
 
-
-
-//const API_URL = 'https://quiz-api-v2.herokuapp.com';
-//const QUERY_DEFAULT = "/questions";
-//const QUERY_ANSWER = "/answer/";
-const API_URL = 'https://quiz-api-v2.herokuapp.com'
-const QUERY_DEFAULT = "/api/quiz";
-const QUERY_ANSWER = "/api/quiz/answer/";
+const API_URL = "https://quiz-api-v2.herokuapp.com";
+const URI_LOGIN = "/api/auth/login";
+const URI_SIGNUP = "/api/auth/register";
 
 class App extends Component {
-   constructor(props) {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+  constructor(props) {
     super(props);
 
+    const { cookies } = props;
     this.state = {
-      requestFailed: false,
-      quizQuestions: null,
+      isAuthenticated: false,
+      token: "",
+      name: cookies.get("name") || "Ben",
+      message: "",
+      isLoading: false,
+      isSignUp: false
+    };
+    this.handleLogin = this.handleLogin.bind(this);
+    this.handleSignMeUp = this.handleSignMeUp.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.onSignupClicked = this.onSignupClicked.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
+  }
+  componentWillMount() {
+    const { cookies } = this.props;
+    var localToken = cookies.get("quizapitoken");
+    if (typeof localToken === "undefined" || localToken.length === 0) {
+      this.setState({
+        isAuthenticated: false,
+        token: ""
+      });
+    } else {
+      this.setState({
+        isAuthenticated: true,
+        token: localToken
+      });
+    }
+  }
 
-      counter: 1,
-      questionId: 1,
-      question: '',
-      answerOptions: [],
-      userAnswer: '',
-      correctAnswer:'',
-      answersTotalPoints:0,
-      result: '',
+  authenticate(option) {
+    var url = API_URL;
 
-      finalResult:''
+    if (option === "login") url = url + URI_LOGIN;
+    else {
+      url = url + URI_SIGNUP;
+    }
+    console.log(url);
+    //fetch data base on current id
+    var data = {
+      email: this.state.email,
+      password: this.state.password
+    };
+    var fetchData = {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-type": "application/json" }
     };
 
-    this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
-    this.handleAnswerInputted = this.handleAnswerInputted.bind(this);
-    this.handleInputChanged = this.handleInputChanged.bind(this);
-    this.moveForward= this.moveForward.bind(this);
-    this.restartQuiz = this.restartQuiz.bind(this);
-    this.handleTimeOut = this.handleTimeOut.bind(this);
-
-  }
-
-  componentDidMount() {
-    fetch(API_URL+QUERY_DEFAULT)
-     .then(response => {
+    fetch(url, fetchData)
+      .then(response => {
         if (!response.ok) {
-          throw Error("Network request failed")
+          throw Error("Network request failed");
         }
-
-        return response
+        return response;
       })
       .then(d => d.json())
-      .then(d => {
-        this.initializeQuiz(d)
-      }, () => {
-        this.setState({
-          requestFailed: true
-        })
-      });
-     
-    }
-      
- 
-  componentWillMount() {
-    
-  }
-
-  initializeQuiz (data){
-    //shuffle questions
-    const shuffledQuestions = this.shuffleArray(data);
-
-    //shuffle choices of each questions
-    shuffledQuestions.map((question) => this.shuffleArray(question.choices));  
-
-    //initialize for the first quiz
-    this.setState({
-      counter: 1,
-      quizQuestions: shuffledQuestions,
-
-      questionId: shuffledQuestions[0].id,
-      question: shuffledQuestions[0].question,
-      answerOptions: shuffledQuestions[0].choices,
-
-
-      userAnswer: '',
-      correctAnswer:'',
-      answersTotalPoints:0,
-      result: '',
-
-      finalResult:'',
-
-      countdown:'start'
-    });
-
-  }
-
-
-  shuffleArray(array) {
-    console.log("array in:" + array);
-    if (array) {
-      var currentIndex = array.length, temporaryValue, randomIndex;
-
-      // While there remain elements to shuffle
-      while (0 !== currentIndex) {
-
-        // Pick a remaining element
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-      }
-    }
-    
-    console.log("array out:" + array);
-    return array;
-  };
-
-  handleTimeOut(event){
-    this.setForward();
-  }
-
-  
-  handleInputChanged(event) {
-    //won't update value until form submitted - event changed causes pause of count down :(
-    //this.setState({userAnswer: event.target.value});
-    
-  }
-
-  handleAnswerInputted(event) {
-    event.preventDefault();
-    this.stopCountDown();
-
-    var currentElem = event.target;
-    var userInput = currentElem.elements["userAnswer"].value;
-    var allInputItems = currentElem.getElementsByTagName("input");
-
-    for(var i = 0 ; i < allInputItems.length; i++)
-      allInputItems[i].disabled = true;
-
-    this.setState({userAnswer: userInput});
-    this.fetchCurrentAnswer();
-
-  }
-
-
-  handleAnswerSelected(event) {
-    this.stopCountDown();
-
-    var userAnswer = event.currentTarget.value;
-
-    this.setState({userAnswer: event.currentTarget.value});
-    this.fetchCurrentAnswer();
-
-  }
-
-
-  fetchCurrentAnswer(){
-    //fetch data base on current id
-    var url = API_URL+QUERY_ANSWER+this.state.questionId.toString();
-
-    fetch(url)
-     .then(response => {
-        if (!response.ok) {
-          throw Error("Network request failed")
+      .then(
+        d => {
+          this.setAuthenticated(d);
+        },
+        () => {
+          this.setState({
+            requestFailed: true,
+            isAuthenticated: false,
+            message: "Please check if email and password is correct."
+          });
         }
-
-        return response
-      })
-      .then(d => d.json())
-      .then(d => {
-         this.setUserAnswer(d.answer)
-      }, () => {
-        this.setState({
-          requestFailed: true
-        })
-      });
-     
-    
+      );
   }
+  setAuthenticated(authData) {
+    if (authData.auth) {
+      const { cookies } = this.props;
+      cookies.set("quizapitoken", authData.token, { path: "/" });
 
-  setUserAnswer(correctValue)  {
-
-    if (correctValue.toUpperCase().trim() === this.state.userAnswer.toUpperCase().trim()) {
-      var increasedPoint = this.state.answersTotalPoints + 1;
-
-      //do something
       this.setState({
-        answersTotalPoints: increasedPoint,
-        correctAnswer:correctValue, 
-        result: 'Correct!'
+        isLoading: false,
+        token: authData.token,
+        isAuthenticated: true,
+        isSignUp: false,
+        message: ""
       });
-
-
-    } else{
-      this.setState({
-        correctAnswer: correctValue,
-        result: 'Try again next time!'  
-      });
-
-    }
-  }
-
-
-  stopCountDown(){
-    this.setState ({countdown:'stop'})
-  }
-
-  moveForward(event){
-    event.preventDefault();
-    this.setForward();
-    
-  }
-
-
-
-  setForward(){
-    if (this.state.counter < this.state.quizQuestions.length) {
-        setTimeout(() => this.setNextQuestion(), 500);
     } else {
-        setTimeout(() => this.setResults(this.getResults()), 500);
+      this.setState({
+        isLoading: false,
+        token: "",
+        isAuthenticated: false,
+        message: "Invalid email or password."
+      });
     }
   }
 
+  handleLogin(event) {
+    event.preventDefault();
+    this.setState({
+      isLoading: true
+    });
+    this.authenticate("login");
+  }
 
-   
-  setNextQuestion() {
-    const counter = this.state.counter + 1;   
+  handleSignMeUp(event) {
+    event.preventDefault();
 
     this.setState({
-      counter: counter,
-      questionId: this.state.quizQuestions[counter - 1].id,
-      question: this.state.quizQuestions[counter - 1].question,
-      answerOptions: this.state.quizQuestions[counter -1].choices,
-      correctAnswer: null,
-      userAnswer: '',
-      result: '',
-      countdown: 'start'
+      isLoading: true
+    });
+    this.authenticate("signup");
+  }
+
+  handleInputChange(event) {
+    event.preventDefault();
+    const { value, name } = event.target;
+    this.setState({
+      [name]: value
     });
   }
 
-  getResults() {
-
-    return this.state.answersTotalPoints.toString();
-
-  }
-
-  setResults (result) {
-    
-      this.setState({ finalResult: result});
-   
-  }
- 
-  renderQuiz() {
-    return (
-      <Quiz
-        counter = {this.state.counter}
-        userAnswer = {this.state.userAnswer}
-        answerOptions = {this.state.answerOptions}
-        questionId = {this.state.questionId}
-        question = {this.state.question}
-        correctAnswer = {this.state.correctAnswer}
-        questionTotal = {this.state.quizQuestions.length}
-        result = {this.state.result}
-        onAnswerSelected = {this.handleAnswerSelected}
-        onAnswerInputted = {this.handleAnswerInputted}
-        onInputChanged = {this.handleInputChanged}
-        onNext = {this.moveForward}
-        onTimeOut = {this.handleTimeOut}
-        countdown = {this.state.countdown}
-
-      />  
-
-    );
-  }
-
-  renderResult() {
-    return (
-      <Result quizResult={this.state.finalResult} 
-              restartQuiz={this.restartQuiz} />
-    );
-  }
-
-  restartQuiz(event){
+  onSignupClicked(event) {
+    console.log("Signup clicked");
     event.preventDefault();
-    this.initializeQuiz(this.state.quizQuestions);
-
+    this.handleLogout();
+    this.setState({
+      isSignUp: true
+    });
   }
 
+  handleLogout() {
+    const { cookies } = this.props;
+    cookies.remove("name");
+    cookies.remove("quizapitoken");
+    this.setState({
+      isAuthenticated: false,
+      token: ""
+    });
+
+    console.log("logged out");
+  }
+
+  renderLogin() {
+    console.log("Render Login");
+    if (!this.state.isSignUp)
+      return (
+        <div class="container">
+          <Login
+            email=""
+            password=""
+            onInputChange={this.handleInputChange}
+            onLogin={this.handleLogin}
+          />
+        </div>
+      );
+  }
+  renderSignUp() {
+    console.log("Render SignUp");
+
+    return (
+      <div class="container">
+        <Signup
+          email=""
+          password=""
+          onInputChange={this.handleInputChange}
+          onSignup={this.handleSignMeUp}
+        />
+      </div>
+    );
+  }
+  renderRoutes() {
+    if (!this.state.isSignUp)
+      return (
+        <Switch>
+          <Route
+            exact
+            path={"/"}
+            component={withAuth(QuizApp, this.state.token)}
+          />
+          <Route path="/quiz" component={withAuth(QuizApp, this.state.token)} />
+        </Switch>
+      );
+  }
   render() {
-    if (this.state.requestFailed) return <p>Failed to load questions!</p>;
-    if (!this.state.quizQuestions) return <p>Loading...</p>;
-        
     return (
       <div className="App">
-        <div className="App-header">
-          <h2>Random Quiz</h2>
-        </div>
-        {this.state.finalResult ? this.renderResult() : this.renderQuiz()}
-       
+        <navbar>
+          <NavComponent
+            isAuthenticated={this.state.isAuthenticated}
+            onLogout={this.handleLogout}
+            onSignup={this.onSignupClicked}
+          />
+        </navbar>
+        <Route path="/top3" component={Top3} />
+        {this.state.message}
+        {this.state.isSignUp ? this.renderSignUp() : null}
+        {this.state.isAuthenticated ? this.renderRoutes() : this.renderLogin()}
       </div>
     );
   }
 }
 
-export default App;
+export default withCookies(App);
